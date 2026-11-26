@@ -7,8 +7,10 @@
 :root{color-scheme:light;--bg:#f5f6f8;--card:#fff;--tx:#1a1d23;--mu:#6b7280;--bd:#e3e6ea;--ac:#2563eb;--ok:#16a34a;--ko:#dc2626;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#111317;--card:#1b1e25;--tx:#eceef2;--mu:#9aa1ad;--bd:#2a2e37;--ac:#5b8def;--ok:#4ade80;--ko:#f87171}}
 :root[data-theme="dark"]{color-scheme:dark;--bg:#111317;--card:#1b1e25;--tx:#eceef2;--mu:#9aa1ad;--bd:#2a2e37;--ac:#5b8def;--ok:#4ade80;--ko:#f87171}
+:root[data-acc="verde"]{--ac:#059669}:root[data-acc="morado"]{--ac:#7c3aed}:root[data-acc="naranja"]{--ac:#ea580c}:root[data-acc="rosa"]{--ac:#db2777}:root[data-acc="gris"]{--ac:#475569}
+:root[data-sh="sq"] .card,:root[data-sh="sq"] button,:root[data-sh="sq"] input,:root[data-sh="sq"] video,:root[data-sh="sq"] .res{border-radius:4px}
 *{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+body{margin:0;background:var(--bg);color:var(--tx);font:var(--fs,15px)/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 main{max-width:720px;margin:0 auto;padding:16px}
 h1{font-size:20px;margin:0 0 12px}
 .tabs{display:flex;gap:6px;margin-bottom:14px}
@@ -29,9 +31,10 @@ video{width:100%;border-radius:12px;background:#000;max-height:340px;object-fit:
 .row:last-child{border:0}
 .tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px;min-width:460px}
 th,td{padding:8px 6px;text-align:left;border-bottom:1px solid var(--bd)}th{color:var(--mu);font-weight:600}
-.pp{display:flex;gap:6px;margin-bottom:10px}.pp button{flex:1;padding:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:10px;font:inherit;cursor:pointer}.pp button.on{background:var(--ac);color:#fff;border-color:var(--ac)}input{font-size:16px}.hide{display:none}#qrbox{display:inline-block;background:#fff;padding:8px;border-radius:8px}
+.pp,.ap{display:flex;gap:6px;margin-bottom:10px}.pp button,.ap button{flex:1;padding:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:10px;font:inherit;cursor:pointer}.pp button.on,.ap button.on{background:var(--ac);color:#fff;border-color:var(--ac)}input{font-size:16px}.kpg{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin:10px 0}.kp{border:1px solid var(--bd);border-radius:10px;padding:10px;text-align:center}.kp b{font-size:18px;display:block}select{width:100%;padding:12px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);font:inherit;font-size:16px}
+.hide{display:none}#qrbox{display:inline-block;background:#fff;padding:8px;border-radius:8px}
 </style></head><body><main>
-<h1>⏱️ Registro de Asistencia</h1><div class="mu" id="sync" style="margin:-6px 0 10px"></div>
+<h1>⏱️ Registro de Asistencia <small style="font-size:11px;color:var(--mu);font-weight:400">v14</small></h1><div class="mu" id="sync" style="margin:-6px 0 10px"></div>
 <div class="tabs"><button data-t="reg" class="on">Registrar</button><button data-t="emp">🔒 Empleados</button><button data-t="log">🔒 Registros</button><button data-t="rep">🔒 Reporte</button></div>
 
 <section id="reg">
@@ -40,17 +43,12 @@ th,td{padding:8px 6px;text-align:left;border-bottom:1px solid var(--bd)}th{color
  <div class="card">
   <div id="m-num"><input id="numIn" placeholder="Número de empleado" inputmode="numeric"><button class="btn" id="numBtn">Registrar</button></div>
   <div id="m-cam" class="hide"><video id="vid" autoplay playsinline muted></video>
-   <button class="btn hide" id="faceBtn">Reconocer rostro</button><label class="mu hide" id="faceLbl" style="display:block;margin-top:10px">¿No abre la cámara? Toma una foto: <input type="file" accept="image/*" capture="user" id="faceFile2"></label><div class="mu" id="camHint"></div><div class="mu" id="dbg" style="font-size:11px"></div><button class="btn s" id="flip" style="margin-top:8px">🔄 Cambiar cámara</button></div>
+   <button class="btn hide" id="faceBtn">Reconocer rostro</button><label class="mu hide" id="faceLbl" style="display:block;margin-top:10px">¿No abre la cámara? Toma una foto: <input type="file" accept="image/*" capture="user" id="faceFile2"></label><div class="mu" id="camHint"></div><div class="mu" id="dbg" style="font-size:11px"></div><label class="mu hide" id="qrLbl" style="display:block;margin-top:10px">¿No lee? Toma una foto del QR: <input type="file" accept="image/*" capture="environment" id="qrFile"></label><button class="btn s" id="flip" style="margin-top:8px">🔄 Cambiar cámara</button></div>
   <div class="res" id="res"></div>
  </div>
 </section>
 
 <section id="emp" class="hide">
- <div class="card"><b>📍 Ubicación Empresa (Geocerca 50m)</b>
-  <div class="mu" id="locStatus" style="margin:6px 0"></div>
-  <button class="btn" id="setLoc" style="background:#0ea5e9">📍 Fijar mi ubicación actual como empresa</button>
-  <div class="mu" style="margin-top:6px">Todos deben checar a máximo 50m de este punto. Si no configuras, queda en modo prueba.</div>
- </div>
  <div class="card"><b>Nuevo empleado</b>
   <input id="eId" placeholder="Número de empleado" style="margin-top:8px"><input id="eName" placeholder="Nombre completo" style="margin-top:8px">
   <button class="btn" id="addEmp">Agregar</button></div>
@@ -59,51 +57,37 @@ th,td{padding:8px 6px;text-align:left;border-bottom:1px solid var(--bd)}th{color
   <button class="btn" id="snap">Capturar muestra (<span id="cnt">0</span>/3)</button>
   <label class="mu" style="display:block;margin-top:10px">¿No abre la cámara? Toma o sube una foto (repite 3 veces): <input type="file" accept="image/*" capture="user" id="faceFile"></label><button class="btn" id="faceDone" style="background:var(--ok)">Listo</button></div>
  <div class="card" id="qrCard" style="display:none;text-align:center"><b id="qrTitle"></b><div style="margin:10px 0"><div id="qrbox"></div></div><div class="mu" id="qrTxt"></div><div class="mu">Toca el QR para agrandarlo. Imprímelo para el empleado.</div><button class="btn" onclick="this.parentNode.style.display='none'">Cerrar</button></div>
- <div class="card" id="empList"></div>
+ <div class="card"><b>🎨 Apariencia</b><input id="aName" placeholder="Nombre de la empresa (opcional)" style="margin:8px 0">
+<div class="mu">Color</div><div class="ap" id="aAcc"><button data-v="azul">🔵</button><button data-v="verde">🟢</button><button data-v="morado">🟣</button><button data-v="naranja">🟠</button><button data-v="rosa">🌸</button><button data-v="gris">⚫</button></div>
+<div class="mu">Modo</div><div class="ap" id="aMode"><button data-v="auto">Automático</button><button data-v="light">Claro</button><button data-v="dark">Oscuro</button></div>
+<div class="mu">Tamaño del texto</div><div class="ap" id="aSize"><button data-v="13px">Chico</button><button data-v="15px">Normal</button><button data-v="18px">Grande</button></div>
+<div class="mu">Esquinas</div><div class="ap" id="aShape"><button data-v="rd">Redondeadas</button><button data-v="sq">Cuadradas</button></div>
+<div class="mu">Se guarda en este dispositivo.</div></div>
+<div class="card"><b>📍 Zona de checada</b><div class="mu" id="zInfo" style="margin:6px 0"></div><input id="zR" type="number" placeholder="Radio en metros" value="100"><button class="btn" id="zSet">Usar mi ubicación actual como centro</button><button class="btn" id="zOff" style="background:var(--bd);color:var(--tx)">Quitar restricción</button><div class="mu" style="margin-top:6px">Hazlo estando en el punto de checado, con el GPS activado.</div></div>
+<div class="card" id="empList"></div>
 </section>
 
-<section id="log" class="hide">
- <div class="card">
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
-   <div><label class="mu">Desde</label><input type="date" id="logFrom"></div>
-   <div><label class="mu">Hasta</label><input type="date" id="logTo"></div>
-  </div>
-  <div style="margin-bottom:10px"><label class="mu">Empleado</label><select id="logEmpFilter" style="width:100%;padding:10px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx)"><option value="">Todos los empleados</option></select></div>
-  <div id="tot" class="mu" style="margin-top:8px"></div>
-  <div class="tw" style="margin-top:8px"><table style="min-width:620px"><thead><tr><th>Fecha</th><th>Nº</th><th>Nombre</th><th>Entrada</th><th>Salida</th><th>Horas</th><th>Retardo</th><th>Extra</th></tr></thead><tbody id="tb"></tbody></table></div>
-  <div style="display:flex;gap:8px;margin-top:10px"><button class="btn" id="csv" style="flex:1">Copiar CSV filtrado</button><button class="btn s" id="logClear">Limpiar</button></div>
- </div>
-</section>
-<section id="rep" class="hide">
-<div class="card">
- <b>📊 Reporte Semanal / Quincenal</b>
- <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0">
-  <div><label class="mu">Colaborador (filtra para detalle)</label><select id="repEmpFilter" style="width:100%;padding:10px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx)"><option value="">Todos - resumen</option></select></div>
-  <div><label class="mu">Vista</label><div class="pp" style="margin:0"><button data-p="s" class="on">Semanal</button><button data-p="q">Quincenal</button><button data-p="custom">Personalizado</button></div></div>
- </div>
- <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:10px 0">
-  <div><label class="mu">Desde</label><input type="date" id="repFrom"></div>
-  <div><label class="mu">Hasta</label><input type="date" id="repTo"></div>
-  <div><label class="mu">Fecha ref (semana/quincena)</label><input type="date" id="rDate"></div>
- </div>
+<section id="log" class="hide"><div class="card" id="recEd" style="display:none"><b id="reTitle"></b>
+ <label class="mu" style="display:block;margin-top:8px">Empleado</label><select id="reEmp"></select>
+ <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px"><div><label class="mu">Fecha</label><input type="date" id="reDate"></div><div><label class="mu">Entrada</label><input type="time" id="reIn"></div><div><label class="mu">Salida</label><input type="time" id="reOut"></div></div>
+ <input id="reWhy" placeholder="Motivo del cambio (obligatorio)" style="margin-top:8px">
+ <button class="btn" id="reSave">Guardar cambio</button><button class="btn" id="reDel" style="background:var(--ko)">Eliminar registro</button><button class="btn" id="reCancel" style="background:var(--bd);color:var(--tx)">Cancelar</button>
+ <div class="mu" style="margin-top:6px">Queda anotado en la columna Nota y en la hoja Auditoria. Deja la salida vacía si el turno sigue abierto.</div></div><div class="card">
+ <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><label class="mu">Desde</label><input type="date" id="lFrom"></div><div><label class="mu">Hasta</label><input type="date" id="lTo"></div></div>
+ <label class="mu" style="display:block;margin-top:8px">Empleado</label><select id="lEmp"><option value="">Todos</option></select>
+ <div id="tot" class="mu" style="margin:8px 0"></div>
+ <div class="tw"><table style="min-width:640px"><thead><tr><th>Fecha</th><th>Nº</th><th>Nombre</th><th>Entrada</th><th>Salida</th><th>Horas</th><th>Llegada</th><th>Extra</th><th></th></tr></thead><tbody id="tb"></tbody></table></div>
+ <button class="btn" id="csv">Copiar CSV</button><button class="btn" id="reNew" style="background:var(--bd);color:var(--tx)">➕ Agregar registro manual</button></div></section>
+<section id="rep" class="hide"><div class="card">
+ <div class="pp"><button data-p="s" class="on">Semanal</button><button data-p="q">Quincenal</button><button data-p="c">Rango</button></div>
+ <div id="rRef"><label class="mu">Una fecha dentro del periodo</label><input type="date" id="rDate"></div>
+ <div id="rRng" class="hide"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><label class="mu">Desde</label><input type="date" id="rFrom"></div><div><label class="mu">Hasta</label><input type="date" id="rTo"></div></div></div>
+ <label class="mu" style="display:block;margin-top:8px">Colaborador</label><select id="rEmp"><option value="">Todos (resumen)</option></select>
  <div id="rLbl" class="mu" style="margin:8px 0"></div>
- 
- <!-- Resumen todos -->
- <div id="repSummary">
-  <div class="tw"><table style="min-width:520px"><thead><tr><th>Nº</th><th>Nombre</th><th>Días</th><th>Horas</th><th>Extra</th><th>Retardos</th><th>Sin salida</th></tr></thead><tbody id="rtb"></tbody></table></div>
- </div>
-
- <!-- Detalle por colaborador -->
- <div id="repDetail" class="hide">
-  <div id="repKPI" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:10px 0"></div>
-  <div id="repCounters" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin:10px 0"></div>
-  <div class="tw"><table style="min-width:700px"><thead><tr><th>Día</th><th>Fecha</th><th>Entrada</th><th>Salida</th><th>Estado trabajador</th><th>Horas día</th><th>Extra día</th><th>Llegada</th></tr></thead><tbody id="rtbDetail"></tbody></table></div>
-  <div id="repAccum" class="mu" style="margin-top:10px;padding:10px;background:var(--bg);border-radius:8px"></div>
- </div>
-
- <div style="display:flex;gap:8px;margin-top:10px"><button class="btn" id="rcsv" style="flex:1">Copiar CSV</button><button class="btn s" id="repClear">Limpiar filtros</button></div>
-</div>
-</section>
+ <div id="rSum"><div class="tw"><table style="min-width:560px"><thead><tr><th>Nº</th><th>Nombre</th><th>Días</th><th>Horas</th><th>Extra</th><th>Retardos</th><th>Sin salida</th></tr></thead><tbody id="rtb"></tbody></table></div></div>
+ <div id="rDet" class="hide"><div class="kpg" id="rKpi"></div><div class="tw"><table style="min-width:660px"><thead><tr><th>Día</th><th>Fecha</th><th>Entrada</th><th>Salida</th><th>Estado</th><th>Horas</th><th>Extra</th><th>Llegada</th></tr></thead><tbody id="rtd"></tbody></table></div></div>
+ <div class="mu" style="margin-top:6px">Horas incluye las extra. Extra = lo que pasa de 48 h en la semana (lun-dom). Los fines de semana sin registro no cuentan como ausencia.</div>
+ <button class="btn" id="rcsv">Copiar CSV</button></div></section>
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
@@ -113,41 +97,14 @@ let D={emps:[],recs:[]};
 try{const s=localStorage.getItem('reg_v1');if(s)D=JSON.parse(s)}catch(e){}
 const save=()=>{try{localStorage.setItem('reg_v1',JSON.stringify(D))}catch(e){}};
 const API='https://script.google.com/macros/s/AKfycbyl4m-KuhA4Mopt_O0sPX2yC7TduGVWyTKbL0AFAibiGFp82-WSFP4sIc6XszxB7XgL5w/exec',KEY='Asist-2026-xK9'; // pega aquí la URL de Apps Script y la misma clave
-const HIN=7*60,HOUT=15*60; // horario 7:00-15:00 (8h jornada)
-const TOL_GREEN=5, TOL_YELLOW=10, MAX_TOL=3; // semáforo: 0-5 verde (3 tolerancias), 6-10 amarillo, 11+ rojo
-const GEOFENCE_M=50; // 50 metros estrictos
-let COMPANY_LAT=null, COMPANY_LNG=null;
-try{const c=JSON.parse(localStorage.getItem('company_loc')||'null'); if(c){COMPANY_LAT=c.lat; COMPANY_LNG=c.lng}}catch(e){}
+const HIN=7*60,HOUT=17*60,TOL=10; // horario 7:00-17:00, tolerancia 10 min
 let ADMIN='',admT=null;
 async function call(a,d){const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({key:KEY,pass:ADMIN,action:a,...d})});return r.json()}
 function setSync(t){$('#sync').textContent=t}
-async function pull(){if(!API)return;try{const r=await call('get');if(!r.ok)throw 0;D.emps=r.emps;D.recs=r.recs;save();renderEmps();renderLog();setSync('☁️ Sincronizado con Google Sheets')}catch(e){setSync('⚠️ Sin conexión: usando datos locales')}}
-async function push(a,d){if(!API)return;try{const r=await call(a,d);if(!r.ok)throw 0;setSync('☁️ Sincronizado con Google Sheets')}catch(e){setSync('⚠️ No se pudo guardar en Google Sheets')}}
+async function pull(){if(!API)return true;try{const r=await call('get');if(!r.ok)throw 0;D.emps=r.emps;D.recs=r.recs;if(r.cfg)D.cfg=r.cfg;save();zInfo();renderEmps();renderLog();setSync('☁️ Sincronizado con Google Sheets');return true}catch(e){setSync('⚠️ Sin conexión con Google Sheets');return false}}
+async function push(a,d){if(!API)return true;try{const r=await call(a,d);if(!r.ok)throw 0;setSync('☁️ Sincronizado con Google Sheets');return true}catch(e){setSync('⚠️ No se pudo guardar en Google Sheets');return false}}
 const pad=n=>String(n).padStart(2,'0');
 const mins=t=>{const d=new Date(t);return d.getHours()*60+d.getMinutes()};
-// --- nuevo semáforo ---
-function getTolUsadas(id, weekStart){
-  // cuenta cuántas veces llegó en 1-5 min en esa semana (lun-dom)
-  const ws = wk(weekStart);
-  return D.recs.filter(r=>r.emp===id && wk(r.in)===ws && r.clas==='VERDE_TOL').length;
-}
-function clasifica(id, t){
-  const m = mins(t)-HIN;
-  if(m<=0) return {tipo:'A_TIEMPO', min:0, color:'green', label:'A tiempo'};
-  if(m<=TOL_GREEN){
-    const usadas = getTolUsadas(id, t);
-    if(usadas < MAX_TOL){
-      return {tipo:'VERDE_TOL', min:m, color:'green', label:'Tolerancia '+ (usadas+1) +' de '+MAX_TOL+' (0-5 min)'};
-    }else{
-      return {tipo:'AMARILLO_AGOTO_TOL', min:m, color:'yellow', label:'Preventivo - Agotó 3 tolerancias (llegó '+m+' min tarde)'};
-    }
-  }
-  if(m<=TOL_YELLOW){
-    return {tipo:'AMARILLO_PREV', min:m, color:'yellow', label:'Preventivo - '+m+' min tarde (6-10 min)'};
-  }
-  return {tipo:'ROJO_ALERTA', min:m, color:'red', label:'ALERTA ROJA - '+m+' min tarde'};
-}
-const lateOf=t=>{const m=mins(t)-HIN;return m>0?m:0}; // para compatibilidad CSV
 
 const WEEK=48*3600000; // horas extra: lo que pase de 48 h por semana (lun-dom)
 const wk=t=>{const d=new Date(t);d.setHours(0,0,0,0);d.setDate(d.getDate()-(d.getDay()+6)%7);return d.getTime()};
@@ -158,28 +115,7 @@ function extraMap(){const M={},G={};
 const hm=t=>{const d=new Date(t);return pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds())};
 const dk=t=>{const d=new Date(t);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
 const dur=ms=>{const m=Math.floor(ms/60000);return Math.floor(m/60)+'h '+pad(m%60)+'m'};
-
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-function haversine(lat1,lon1,lat2,lon2){
-  const R=6371000, toRad=x=>x*Math.PI/180;
-  const dLat=toRad(lat2-lat1), dLon=toRad(lon2-lon1);
-  const a=Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
-  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
-}
-async function checkGeofence(){
-  if(COMPANY_LAT===null || COMPANY_LNG===null) return {ok:true, msg:'Sin ubicación empresa configurada (modo prueba)'};
-  return new Promise(res=>{
-    if(!navigator.geolocation) return res({ok:false, msg:'Tu navegador no permite GPS'});
-    navigator.geolocation.getCurrentPosition(pos=>{
-      const d=haversine(pos.coords.latitude, pos.coords.longitude, COMPANY_LAT, COMPANY_LNG);
-      if(d<=GEOFENCE_M) res({ok:true, msg:'Dentro: '+Math.round(d)+'m', dist:d});
-      else res({ok:false, msg:'FUERA DE RANGO: Estás a '+Math.round(d)+'m (máx 50m)', dist:d});
-    }, err=>{
-      res({ok:false, msg:'No se pudo obtener ubicación: '+err.message+' - Activa GPS'});
-    }, {enableHighAccuracy:true, timeout:10000});
-  });
-}
-
 setInterval(()=>{const n=new Date();$('#clock').textContent=hm(n);$('#date').textContent=n.toLocaleDateString('es-MX',{weekday:'long',day:'numeric',month:'long',year:'numeric'})},500);
 
 // ---- cámara
@@ -189,38 +125,43 @@ function stopCam(){scanning=false;if(stream){stream.getTracks().forEach(t=>t.sto
 
 // ---- registro
 function show(ok,html){const r=$('#res');r.className='res '+(ok?'ok':'ko');r.innerHTML=html;clearTimeout(show.t);show.t=setTimeout(()=>r.className='res',6000)}
+function getPos(ms){return new Promise((ok,ko)=>{if(!navigator.geolocation)return ko({code:0});navigator.geolocation.getCurrentPosition(p=>ok({lat:p.coords.latitude,lng:p.coords.longitude,acc:p.coords.accuracy}),ko,{enableHighAccuracy:true,timeout:ms||8000,maximumAge:15000})})}
+function dist(a,b){const R=6371000,t=x=>x*Math.PI/180,dl=t(b.lat-a.lat),dg=t(b.lng-a.lng),h=Math.sin(dl/2)**2+Math.cos(t(a.lat))*Math.cos(t(b.lat))*Math.sin(dg/2)**2;return 2*R*Math.asin(Math.sqrt(h))}
+const cfg=()=>D.cfg||(D.cfg={on:false,lat:0,lng:0,r:100});
+function zInfo(){const Z=cfg();$('#zInfo').textContent=Z.on?'Activa: centro '+(+Z.lat).toFixed(5)+', '+(+Z.lng).toFixed(5)+' · radio '+Z.r+' m':'Sin restricción: se puede checar desde cualquier lugar.'}
 const lastReg={};let regBusy=false;
 async function register(id,via){if(regBusy)return false;regBusy=true;try{return await _register(id,via)}finally{regBusy=false}}
-async function _register(id,via){let pend=null;if(API)await pull();
+async function _register(id,via){let pend=null,okMsg='',undo=null;if(API&&!(await pull())){show(false,'<b>⚠️ Sin conexión con Google Sheets</b><div class="mu">No se registró. Revisa el internet e inténtalo de nuevo</div>');return false}
  id=String(id).trim();const e=D.emps.find(x=>x.id===id);
  if(!e){show(false,'<b>Empleado no encontrado</b><div class="mu">Nº '+esc(id)+'</div>');return false}
- if(lastReg[id]&&Date.now()-lastReg[id]<10000){show(false,'<b>Ya registraste hace unos segundos</b>');return false}lastReg[id]=Date.now();
+ if(lastReg[id]&&Date.now()-lastReg[id]<10000){show(false,'<b>Ya registraste hace unos segundos</b>');return false}
+ show(true,'<b>📍 Obteniendo ubicación…</b>');let loc=null;const Z=cfg();try{loc=await getPos(Z.on?12000:4000)}catch(err){}
+ if(Z.on){if(!loc){show(false,'<b>📍 No se pudo obtener la ubicación</b><div class="mu">Activa el GPS y permite el acceso a la ubicación</div>');return false}
+  const dd=dist(loc,Z);if(dd-Math.min(loc.acc,30)>Z.r){show(false,'<b>📍 Fuera de la zona de checada</b><div class="mu">Estás a '+Math.round(dd)+' m del punto (máximo '+Z.r+' m)</div>');return false}}
+ lastReg[id]=Date.now();
  const ph=e.foto?'<img src="'+e.foto+'" style="width:96px;height:96px;border-radius:50%;object-fit:cover;margin-bottom:6px"><br>':'';const now=Date.now(),foto=ev();let open=D.recs.find(r=>r.emp===id&&!r.out),aviso='';
- if(open&&dk(open.in)!==dk(now)){const lo=new Date(open.in);lo.setHours(0,0,0,0);open.out=Math.max(lo.getTime()+HOUT*60000,open.in);open.nota='FALTA CHECADA - Jornada cortada a 15:00';save();await push('out',{rid:open.rid,out:open.out,hrs:+((open.out-open.in)/3600000).toFixed(2),extra:0,nota:open.nota});open=null;aviso='<div class="mu" style="color:var(--ko)">⚠️ FALTA CHECADA de tu salida anterior; se cerró automático a las 15:00.</div>'}
- if(!open&&!aviso){const L=D.recs.filter(r=>r.emp===id).sort((a,b)=>b.in-a.in)[0];if(L&&L.nota&&dk(L.in)!==dk(now))aviso='<div class="mu" style="color:var(--ko)">⚠️ FALTA CHECADA de tu salida anterior; se cerró automático a las 15:00.</div>'}
- if(open){open.out=now;open.outVia=via;save();pend=push('out',{rid:open.rid,out:now,hrs:+((now-open.in)/3600000).toFixed(2),extra:+(((extraMap()[open.rid])||0)/3600000).toFixed(2),foto});
+ if(open&&dk(open.in)!==dk(now)){const lo=new Date(open.in);lo.setHours(0,0,0,0);open.out=Math.max(lo.getTime()+HOUT*60000,open.in);open.nota='Faltó checada';save();await push('out',{rid:open.rid,out:open.out,hrs:+((open.out-open.in)/3600000).toFixed(2),extra:0,nota:open.nota});open=null;aviso='<div class="mu">Faltó checada de tu salida anterior; se registró a las 17:00.</div>'}
+ if(!open&&!aviso){const L=D.recs.filter(r=>r.emp===id).sort((a,b)=>b.in-a.in)[0];if(L&&L.nota&&dk(L.in)!==dk(now))aviso='<div class="mu">Faltó checada de tu salida anterior; se registró a las 17:00.</div>'}
+ if(open){open.out=now;open.outVia=via;save();undo=()=>{open.out=null;open.outVia=null;save()};pend=push('out',{rid:open.rid,out:now,hrs:+((now-open.in)/3600000).toFixed(2),extra:+(((extraMap()[open.rid])||0)/3600000).toFixed(2),foto,loc});
   const today=D.recs.filter(r=>r.emp===id&&r.out&&dk(r.in)===dk(now)).reduce((a,r)=>a+r.out-r.in,0);
-  show(true,ph+'<b>👋 Salida registrada</b><div>'+esc(e.name)+'</div><div>Entrada '+hm(open.in)+' · Salida '+hm(now)+'</div><div><b>Horas laboradas: '+dur(now-open.in)+'</b></div>'+(((extraMap()[open.rid])||0)>0?'<div>Horas extra: '+dur(extraMap()[open.rid])+'</div>':'')+'<div class="mu">Semana: '+dur(weekMs(id,now))+' de 48h</div>'+'<div class="mu">Total del día: '+dur(today)+'</div>')}
- else{
-    const clas=clasifica(id, now);
-    const nr={rid:'r'+now+Math.floor(Math.random()*999),emp:id,in:now,out:null,inVia:via, clas:clas.tipo, lateMin:clas.min};D.recs.push(nr);save();pend=push('in',{rid:nr.rid,emp:id,name:e.name,in:now,via,late:clas.min, clas:clas.tipo, foto});
-    let colorBox = clas.color==='green' ? 'var(--ok)' : clas.color==='yellow' ? '#eab308' : 'var(--ko)';
-    let badge = clas.tipo==='A_TIEMPO' ? '✅' : clas.tipo.startsWith('VERDE') ? '🟢' : clas.color==='yellow' ? '🟡' : '🔴';
-    show(true,ph+aviso+'<b>'+badge+' Entrada registrada - '+clas.label+'</b><div>'+esc(e.name)+'</div><div>'+hm(now)+'</div><div style="color:'+colorBox+';font-weight:700;margin-top:4px">'+clas.label+'</div>'+ (clas.tipo!=='A_TIEMPO' ? '<div class="mu">Tolerancias usadas esta semana: '+getTolUsadas(id, now)+'/'+MAX_TOL+'</div>' : '' ))
-  }
- renderLog();if(pend)await pend;return true}
+  okMsg=(ph+'<b>👋 Salida registrada</b><div>'+esc(e.name)+'</div><div>Entrada '+hm(open.in)+' · Salida '+hm(now)+'</div><div><b>Horas laboradas: '+dur(now-open.in)+'</b></div>'+(((extraMap()[open.rid])||0)>0?'<div>Horas extra: '+dur(extraMap()[open.rid])+'</div>':'')+'<div class="mu">Semana: '+dur(weekMs(id,now))+' de 48h</div>'+'<div class="mu">Total del día: '+dur(today)+'</div>')}
+ else{const nr={rid:'r'+now+Math.floor(Math.random()*999),emp:id,in:now,out:null,inVia:via};D.recs.push(nr);save();undo=()=>{D.recs=D.recs.filter(r=>r!==nr);save()};const cz=cl(id,now);pend=push('in',{rid:nr.rid,emp:id,name:e.name,in:now,via,late:cz.late,clas:cz.txt,foto,loc});
+  okMsg=(ph+aviso+'<b>✅ Entrada registrada</b><div>'+esc(e.name)+'</div><div>'+hm(now)+'</div>'+'<div style="color:'+cz.col+';font-weight:700;margin-top:4px">'+cz.ico+' '+cz.txt+'</div>')}
+ renderLog();show(true,'<b>⏳ Guardando…</b>');const okp=pend?await pend:true;
+ if(!okp){if(undo)undo();lastReg[id]=0;renderLog();show(false,'<b>⚠️ No se guardó en Google Sheets</b><div class="mu">Revisa el internet e inténtalo de nuevo</div>');return false}
+ show(true,okMsg);return true}
 $('#numBtn').onclick=async()=>{if(await register($('#numIn').value,'número'))$('#numIn').value=''};
 $('#numIn').onkeydown=e=>{if(e.key==='Enter')$('#numBtn').click()};
 
 // ---- modos
 async function setMode(m,keep){mode=m;if(!keep)facing=(m==='qr'?'environment':'user');$$('.seg button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
- $('#m-num').classList.toggle('hide',m!=='num');$('#m-cam').classList.remove('hide');$('#faceBtn').classList.toggle('hide',m!=='face');$('#faceLbl').classList.toggle('hide',m!=='face');
+ $('#m-num').classList.toggle('hide',m!=='num');$('#m-cam').classList.remove('hide');$('#faceBtn').classList.toggle('hide',m!=='face');$('#faceLbl').classList.toggle('hide',m!=='face');$('#qrLbl').classList.toggle('hide',m!=='qr');
  stopCam();
  const ok=await cam($('#vid'),facing);if(mode!==m)return;$('#camHint').textContent=ok?(m==='qr'?'Muestra tu código QR a la cámara':m==='face'?'Mira a la cámara y pulsa “Reconocer rostro”':'Se tomará una foto al registrar'):'No se pudo abrir la cámara ('+camErr+'). Abre la app en su propia pestaña, permite la cámara, o usa “Tomar foto”.';
  if(ok&&m==='qr'){scanning=true;scanLoop()}}
 $$('.seg button').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
 $('#flip').onclick=()=>{facing=facing==='user'?'environment':'user';setMode(mode,true)};
-const BD='BarcodeDetector' in window?new BarcodeDetector({formats:['qr_code']}):null;
+const BD=(()=>{try{return 'BarcodeDetector' in window?new BarcodeDetector({formats:['qr_code']}):null}catch(e){return null}})();
 let scanBusy=false;
 async function readQR(v){
  if(BD){try{const r=await BD.detect(v);if(r.length)return r[0].rawValue}catch(e){}}
@@ -230,7 +171,7 @@ async function readQR(v){
 async function scanLoop(){if(!scanning)return;const v=$('#vid');scanLoop.n=(scanLoop.n||0)+1;$('#dbg').textContent='Lector: '+(BD?'nativo':'jsQR')+' · '+v.videoWidth+'×'+v.videoHeight+' · cámara '+(facing==='user'?'frontal':'trasera')+' · intentos '+scanLoop.n;
  if(!busy&&!scanBusy&&v.videoWidth){scanBusy=true;try{const t=await readQR(v);
   if(t&&t.startsWith('EMP:')){busy=true;register(t.slice(4),'QR');setTimeout(()=>busy=false,4000)}
-  else if(t)$('#camHint').textContent='Leí un QR, pero no es de un empleado de esta app.'}catch(e){}scanBusy=false}
+  else if(t)$('#camHint').textContent='Leí un QR, pero no es de un empleado de esta app.'}catch(e){$('#camHint').textContent='Error del lector: '+(e.message||e)}scanBusy=false}
  setTimeout(()=>requestAnimationFrame(scanLoop),80)}
 
 // ---- rostro (descriptor simple 16x16 en grises)
@@ -253,18 +194,12 @@ $('#faceBtn').onclick=()=>{const v=$('#vid');if(v.videoWidth)recog(desc(v))};
 function fromFile(f,cb){if(!f)return;const r=new FileReader();r.onload=()=>{const i=new Image();i.onload=()=>cb(desc(i),i);i.src=r.result};r.readAsDataURL(f)}
 $('#faceFile2').onchange=e=>{fromFile(e.target.files[0],recog);e.target.value=''};
 $('#faceFile').onchange=e=>{fromFile(e.target.files[0],(d,i)=>{if(!faceFor)return;faceFor.foto=photo(i);faceFor.face.push(d);$('#cnt').textContent=faceFor.face.length;save()});e.target.value=''};
+$('#qrFile').onchange=e=>{const f=e.target.files[0];e.target.value='';if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=async()=>{
+ const k=Math.min(1,1200/Math.max(im.width,im.height)),w=Math.round(im.width*k),h=Math.round(im.height*k),c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(im,0,0,w,h);let t=null;
+ if(BD){try{const rs=await BD.detect(c);if(rs.length)t=rs[0].rawValue}catch(e){}}
+ if(!t&&typeof jsQR==='function'){const q=jsQR(x.getImageData(0,0,w,h).data,w,h,{inversionAttempts:'attemptBoth'});if(q)t=q.data}
+ if(t&&t.startsWith('EMP:'))register(t.slice(4),'QR');else show(false,'<b>No se encontró un QR válido en la foto</b><div class="mu">Acércate más y que se vea completo</div>')};im.src=r.result};r.readAsDataURL(f)};
 let faceFor=null;
-$('#setLoc')?.addEventListener('click', ()=>{
-  if(!navigator.geolocation) return alert('GPS no disponible');
-  navigator.geolocation.getCurrentPosition(pos=>{
-    COMPANY_LAT=pos.coords.latitude; COMPANY_LNG=pos.coords.longitude;
-    localStorage.setItem('company_loc', JSON.stringify({lat:COMPANY_LAT,lng:COMPANY_LNG}));
-    $('#locStatus').textContent='✅ Ubicación fijada: '+COMPANY_LAT.toFixed(6)+', '+COMPANY_LNG.toFixed(6);
-    alert('Ubicación empresa guardada - Geocerca 50m activa');
-  }, err=>alert('Error GPS: '+err.message), {enableHighAccuracy:true});
-});
-function updateLocStatus(){const el=$('#locStatus'); if(!el) return; if(COMPANY_LAT===null) el.textContent='⚠️ Sin ubicación - En modo prueba (sin geocerca)'; else el.textContent='✅ Geocerca activa: '+COMPANY_LAT.toFixed(5)+', '+COMPANY_LNG.toFixed(5)+' (50m)';}
-setTimeout(updateLocStatus,500);
 function renderEmps(){$('#empList').innerHTML=D.emps.length?D.emps.map(e=>'<div class="row"><div style="display:flex;gap:10px;align-items:center">'+(e.foto?'<img src="'+e.foto+'" style="width:40px;height:40px;border-radius:50%;object-fit:cover">':'')+'<div><b>'+esc(e.name)+'</b><div class="mu">Nº '+esc(e.id)+' · '+(e.face&&e.face.length?'rostro ✓':'sin rostro')+'</div></div></div><div><button class="btn s" data-a="qr" data-i="'+esc(e.id)+'">QR</button><button class="btn s" data-a="face" data-i="'+esc(e.id)+'">Rostro</button><button class="btn s" data-a="del" data-i="'+esc(e.id)+'">✕</button></div></div>').join(''):'<div class="mu">Aún no hay empleados.</div>'}
 $('#empList').onclick=async ev=>{const b=ev.target.closest('button');if(!b)return;const id=b.dataset.i,e=D.emps.find(x=>x.id===id);
  if(b.dataset.a==='del'){if(confirm('¿Eliminar a '+e.name+'?')){D.emps=D.emps.filter(x=>x.id!==id);save();push('delEmp',{id});renderEmps()}}
@@ -276,288 +211,105 @@ $('#faceDone').onclick=()=>{if(faceFor)push('saveEmp',{emp:faceFor});stopCam();$
 $('#addEmp').onclick=()=>{const id=$('#eId').value.trim(),n=$('#eName').value.trim();if(!id||!n)return;
  if(D.emps.some(e=>e.id===id))return alert('Ese número ya existe.');D.emps.push({id,name:n,face:[]});save();push('saveEmp',{emp:{id,name:n,face:[]}});$('#eId').value=$('#eName').value='';renderEmps()};
 
-// ---- registros SIN fecha exacta, CON fecha en cada registro
-function updateLogFilters(){
-  const sel=$('#logEmpFilter');
-  if(!sel) return;
-  const cur=sel.value;
-  sel.innerHTML='<option value="">Todos los empleados</option>'+D.emps.map(e=>`<option value="${esc(e.id)}">${esc(e.name)} (${esc(e.id)})</option>`).join('');
-  sel.value=cur;
-  const st=$('#locStatus');
-  if(st){
-    try{const c=JSON.parse(localStorage.getItem('company_loc')||'null'); if(c) st.textContent='✅ Geocerca 50m: '+c.lat.toFixed(5)+','+c.lng.toFixed(5); else st.textContent='⚠️ Sin geocerca (modo prueba)';}catch(e){ st.textContent='⚠️ Sin geocerca'; }
-  }
-}
-function getLogRows(){
-  const empFilter=$('#logEmpFilter')?.value||'';
-  const fromVal=$('#logFrom')?.value;
-  const toVal=$('#logTo')?.value;
-  let a=0,b=Infinity;
-  if(fromVal) a=new Date(fromVal+'T00:00:00').getTime();
-  if(toVal) b=new Date(toVal+'T23:59:59').getTime();
-  const EM=extraMap();
-  return D.recs.filter(r=>{
-    const inRange=r.in>=a && r.in<=b;
-    const empMatch=!empFilter || r.emp===empFilter;
-    return inRange && empMatch;
-  }).sort((x,y)=>y.in-x.in).map(r=>{
-    const e=D.emps.find(x=>x.id===r.emp);
-    // CORREGIDO: si el registro no tiene clas (viejos), lo recalcula según hora real
-    const realClas = clasifica(r.emp, r.in);
-    const clas = r.clas || realClas.tipo;
-    // CORREGIDO: lateMin 0 era falsy y se perdía, ahora verifica null/undefined
-    const late = (r.lateMin!==undefined && r.lateMin!==null) ? r.lateMin : (r.late!==undefined?r.late:lateOf(r.in));
-    const finalClas = r.clas ? clas : realClas.tipo;
-    const finalLate = (r.lateMin!==undefined && r.lateMin!==null) ? r.lateMin : realClas.min;
-    return {id:r.emp,name:e?e.name:'(eliminado)',date:dk(r.in),i:r.in,o:r.out,ms:(r.out||Date.now())-r.in,open:!r.out,late:finalLate,clas:finalClas,nota:r.nota||'',ex:r.out?(EM[r.rid]||0)/60000:0,realLabel:realClas.label};
-  });
-}
-function rows(){return getLogRows();}
-function renderLog(){
-  updateLogFilters();
-  const R=getLogRows();
-  let badge=c=> {
-    if(c==='A_TIEMPO') return '✅ A tiempo';
-    if(c==='VERDE_TOL') return '🟢 Tolerancia (0-5m)';
-    if(c==='AMARILLO_AGOTO_TOL') return '🟡 Agotó tolerancias';
-    if(c==='AMARILLO_PREV') return '🟡 Preventivo (6-10m)';
-    if(c && c.startsWith('ROJO')) return '🔴 ALERTA (11m+)';
-    if(c && c.startsWith('AMARILLO')) return '🟡 Preventivo';
-    return '—';
-  };
-  $('#tb').innerHTML=R.length?R.map(r=>{
-    const retardoTxt = r.late>0 ? r.late+' min tarde' : '0m';
-    const color = r.late===0 ? 'var(--ok)' : r.late<=5 ? '#16a34a' : r.late<=10 ? '#ca8a04' : 'var(--ko)';
-    return '<tr><td><b>'+esc(r.date)+'</b></td><td>'+esc(r.id)+'</td><td>'+esc(r.name)+'</td><td>'+hm(r.i)+(r.nota?'<div style="color:var(--ko);font-size:11px">⚠️ '+esc(r.nota)+'</div>':'')+'</td><td>'+(r.o?hm(r.o):'<span class="mu">—</span>')+'</td><td>'+(r.open?'<span class="mu">En curso</span>':dur(r.ms))+'</td><td><span style="color:'+color+';font-weight:700">'+badge(r.clas)+'</span><br><small>'+retardoTxt+'</small></td><td>'+(r.ex?dur(r.ex*60000):'—')+'</td></tr>';
-  }).join(''):'<tr><td colspan="8" class="mu">Sin registros. Usa Desde/Hasta para filtrar.</td></tr>';
-  $('#tot').textContent='Registros: '+R.length+' · Horas totales (cerrados): '+dur(R.filter(r=>!r.open).reduce((a,r)=>a+r.ms,0));
-}
-$('#csv').onclick=async()=>{
-  const R=getLogRows();
-  const t='Fecha,Numero,Nombre,Entrada,Salida,Horas,Retardo_min,Extra_h,Nota\n'+R.map(r=>[r.date,r.id,'"'+r.name+'"',hm(r.i),r.o?hm(r.o):'',r.open?'':(r.ms/3600000).toFixed(2),r.late,(r.ex/60).toFixed(2),'"'+r.nota+'"'].join(',')).join('\n');
-  try{await navigator.clipboard.writeText(t);$('#csv').textContent='¡Copiado!'}catch(e){prompt('Copia el CSV:',t)}setTimeout(()=>$('#csv').textContent='Copiar CSV filtrado',1500);
-};
-$('#logEmpFilter')?.addEventListener('change',renderLog);
-$('#logFrom')?.addEventListener('change',renderLog);
-$('#logTo')?.addEventListener('change',renderLog);
-document.getElementById('setLoc')?.addEventListener('click',()=>{ if(!navigator.geolocation) return alert('GPS no disponible'); navigator.geolocation.getCurrentPosition(pos=>{ COMPANY_LAT=pos.coords.latitude; COMPANY_LNG=pos.coords.longitude; localStorage.setItem('company_loc',JSON.stringify({lat:COMPANY_LAT,lng:COMPANY_LNG})); alert('Geocerca fijada'); updateLogFilters(); }, e=>alert('Error GPS: '+e.message), {enableHighAccuracy:true}); });
-$('#logClear')?.addEventListener('click',()=>{ $('#logFrom').value=''; $('#logTo').value=''; $('#logEmpFilter').value=''; renderLog(); });
-
-
+// ---- semáforo de llegada (horario 7:00; 1-5 min = tolerancia, máx. 3 por semana)
+const TOLV=5,TOLA=10,MAXT=3;
+function cl(id,t){const m=mins(t)-HIN;
+ if(m<=0)return{tipo:'A',min:0,late:0,ico:'✅',col:'var(--ok)',txt:'A tiempo'};
+ if(m<=TOLV){const w=wk(t),u=D.recs.filter(r=>r.emp===id&&wk(r.in)===w&&r.in<t&&mins(r.in)-HIN>0&&mins(r.in)-HIN<=TOLV).length;
+  if(u<MAXT)return{tipo:'V',min:m,late:0,ico:'🟢',col:'var(--ok)',txt:'Tolerancia '+(u+1)+' de '+MAXT+' ('+m+' min)'};
+  return{tipo:'Y',min:m,late:m,ico:'🟡',col:'#ca8a04',txt:'Preventivo: agotó las '+MAXT+' tolerancias ('+m+' min tarde)'}}
+ if(m<=TOLA)return{tipo:'Y',min:m,late:m,ico:'🟡',col:'#ca8a04',txt:'Preventivo: '+m+' min tarde'};
+ return{tipo:'R',min:m,late:m,ico:'🔴',col:'var(--ko)',txt:'ALERTA: '+m+' min tarde'}}
+// ---- registros (por defecto, últimos 7 días)
+const d7=()=>{const d=new Date();d.setDate(d.getDate()-6);return dk(d.getTime())};
+$('#lFrom').value=d7();$('#lTo').value=dk(Date.now());
+function fillEmp(sel){const v=sel.value;sel.innerHTML='<option value="">'+(sel.id==='rEmp'?'Todos (resumen)':'Todos')+'</option>'+D.emps.map(e=>'<option value="'+esc(e.id)+'">'+esc(e.name)+' ('+esc(e.id)+')</option>').join('');sel.value=v}
+function rows(){const f=new Date(($('#lFrom').value||d7())+'T00:00:00').getTime(),t=new Date(($('#lTo').value||dk(Date.now()))+'T23:59:59').getTime(),em=$('#lEmp').value,EM=extraMap();
+ return D.recs.filter(r=>r.in>=f&&r.in<=t&&(!em||r.emp===em)).sort((a,b)=>b.in-a.in).map(r=>{const e=D.emps.find(x=>x.id===r.emp);return{rid:r.rid,id:r.emp,name:e?e.name:'(eliminado)',date:dk(r.in),i:r.in,o:r.out,ms:(r.out||Date.now())-r.in,open:!r.out,c:cl(r.emp,r.in),nota:r.nota||'',ex:r.out?(EM[r.rid]||0)/60000:0}})}
+function renderLog(){fillEmp($('#lEmp'));const R=rows();
+ $('#tb').innerHTML=R.length?R.map(r=>'<tr><td>'+r.date+'</td><td>'+esc(r.id)+'</td><td>'+esc(r.name)+'</td><td>'+hm(r.i)+'</td><td>'+(r.o?hm(r.o):'<span class="mu">—</span>')+(r.nota?'<div style="color:var(--ko);font-size:12px">⚠️ '+esc(r.nota)+'</div>':'')+'</td><td>'+(r.open?'<span class="mu">En curso</span>':dur(r.ms))+'</td><td style="color:'+r.c.col+';font-weight:600">'+r.c.ico+' '+r.c.txt+'</td><td>'+(r.ex?dur(r.ex*60000):'—')+'</td><td><button class="btn s" data-e="'+esc(r.rid)+'">✏️</button></td></tr>').join(''):'<tr><td colspan="9" class="mu">Sin registros en este rango.</td></tr>';
+ $('#tot').textContent=R.length+' registros · Horas (turnos cerrados): '+dur(R.filter(r=>!r.open).reduce((a,r)=>a+r.ms,0))}
+['#lFrom','#lTo','#lEmp'].forEach(s=>$(s).onchange=renderLog);
+$('#csv').onclick=async()=>{const t='Fecha,Numero,Nombre,Entrada,Salida,Horas,Llegada,Retardo_min,Extra_h,Nota\n'+rows().map(r=>[r.date,r.id,'"'+r.name+'"',hm(r.i),r.o?hm(r.o):'',r.open?'':(r.ms/3600000).toFixed(2),'"'+r.c.txt+'"',r.c.late,(r.ex/60).toFixed(2),'"'+r.nota+'"'].join(',')).join('\n');
+ try{await navigator.clipboard.writeText(t);$('#csv').textContent='¡Copiado!'}catch(e){prompt('Copia el CSV:',t)}setTimeout(()=>$('#csv').textContent='Copiar CSV',1500)};
+const AP=(()=>{try{return JSON.parse(localStorage.getItem('reg_ap')||'{}')}catch(e){return{}}})();
+function applyAp(){const r=document.documentElement;r.dataset.acc=AP.acc||'azul';
+ if(AP.mode&&AP.mode!=='auto')r.dataset.theme=AP.mode;else delete r.dataset.theme;
+ r.style.setProperty('--fs',AP.fs||'15px');r.dataset.sh=AP.sh||'rd';
+ const n=AP.name||'Registro de Asistencia';$('h1').firstChild.nodeValue='⏱️ '+n+' ';document.title=n;
+ [['#aAcc','acc','azul'],['#aMode','mode','auto'],['#aSize','fs','15px'],['#aShape','sh','rd']].forEach(([s,k,d])=>$$(s+' button').forEach(b=>b.classList.toggle('on',b.dataset.v===(AP[k]||d))));
+ if(document.activeElement!==$('#aName'))$('#aName').value=AP.name||'';
+ const tc={azul:'#2563eb',verde:'#059669',morado:'#7c3aed',naranja:'#ea580c',rosa:'#db2777',gris:'#475569'};document.querySelector('meta[name=theme-color]').content=tc[AP.acc||'azul']}
+function saveAp(){try{localStorage.setItem('reg_ap',JSON.stringify(AP))}catch(e){}applyAp()}
+[['#aAcc','acc'],['#aMode','mode'],['#aSize','fs'],['#aShape','sh']].forEach(([s,k])=>$$(s+' button').forEach(b=>b.onclick=()=>{AP[k]=b.dataset.v;saveAp()}));
+$('#aName').oninput=e=>{AP.name=e.target.value.trim();saveAp()};
+$('#zSet').onclick=async()=>{const r=Math.max(20,Math.round(+$('#zR').value||100));try{const p=await getPos(15000);D.cfg={on:true,lat:p.lat,lng:p.lng,r};save();push('saveCfg',{cfg:D.cfg});zInfo();alert('Zona guardada con radio de '+r+' m. Precisión del GPS: ±'+Math.round(p.acc)+' m')}catch(e){alert('No se pudo obtener la ubicación. Activa el GPS y permite el acceso.')}};
+$('#zOff').onclick=()=>{cfg().on=false;save();push('saveCfg',{cfg:D.cfg});zInfo()};
 // ---- administrador
 async function login(){if(!API||ADMIN)return touch();const p=prompt('Contraseña de administrador:');if(!p)return false;
  try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({key:KEY,pass:p,action:'auth'})}).then(x=>x.json());if(r.ok){ADMIN=p;return touch()}}catch(e){}
  alert('Contraseña incorrecta o sin conexión.');return false}
 function touch(){if(API){clearTimeout(admT);admT=setTimeout(()=>{ADMIN='';$('.tabs button[data-t=reg]').click()},600000)}return true}
-// ---- reporte con detalle por colaborador
-let per='s';
-$$('.pp button').forEach(b=>b.onclick=()=>{per=b.dataset.p;$$('.pp button').forEach(x=>x.classList.toggle('on',x===b)); if(per!=='custom'){ $('#repFrom').value=''; $('#repTo').value=''; } renderRep()});
+// ---- corrección manual de registros (solo administrador)
+let reId=null;
+function openRe(r){reId=r?r.rid:null;$('#reTitle').textContent=r?'✏️ Editar registro':'➕ Agregar registro manual';
+ $('#reEmp').innerHTML=D.emps.map(e=>'<option value="'+esc(e.id)+'">'+esc(e.name)+' ('+esc(e.id)+')</option>').join('');
+ if(r)$('#reEmp').value=r.emp;
+ $('#reDate').value=r?dk(r.in):dk(Date.now());$('#reIn').value=r?hm(r.in).slice(0,5):'07:00';$('#reOut').value=r&&r.out?hm(r.out).slice(0,5):'';$('#reWhy').value='';
+ $('#reDel').style.display=r?'block':'none';$('#recEd').style.display='block';$('#recEd').scrollIntoView({behavior:'smooth'})}
+$('#reNew').onclick=()=>openRe(null);
+$('#reCancel').onclick=()=>{$('#recEd').style.display='none'};
+$('#tb').onclick=e=>{const b=e.target.closest('button[data-e]');if(!b)return;const r=D.recs.find(x=>x.rid===b.dataset.e);if(r)openRe(r)};
+$('#reSave').onclick=async()=>{const emp=$('#reEmp').value,ds=$('#reDate').value,ti=$('#reIn').value,to=$('#reOut').value,why=$('#reWhy').value.trim();
+ if(!emp||!ds||!ti)return alert('Faltan empleado, fecha o entrada.');if(!why)return alert('Escribe el motivo del cambio.');
+ const i=new Date(ds+'T'+ti+':00').getTime(),o=to?new Date(ds+'T'+to+':00').getTime():null;
+ if(o&&o<=i)return alert('La salida debe ser posterior a la entrada.');
+ const rid=reId||('r'+i+'m'+Math.floor(Math.random()*999)),old=D.recs.find(r=>r.rid===rid),nota='Corregido a mano: '+why;
+ D.recs=D.recs.filter(r=>r.rid!==rid);D.recs.push({rid,emp,in:i,out:o,inVia:'manual',nota});save();
+ const cz=cl(emp,i),ok=await push('saveRec',{rec:{rid,emp,in:i,out:o,nota,late:cz.late,clas:cz.txt},why});
+ if(!ok){D.recs=D.recs.filter(r=>r.rid!==rid);if(old)D.recs.push(old);save();renderLog();return alert('No se guardó en Google Sheets. Revisa la conexión y la contraseña, e inténtalo de nuevo.')}
+ $('#recEd').style.display='none';renderLog()};
+$('#reDel').onclick=async()=>{const why=$('#reWhy').value.trim();if(!why)return alert('Escribe el motivo para eliminar.');if(!confirm('¿Eliminar este registro?'))return;
+ const old=D.recs.find(r=>r.rid===reId);D.recs=D.recs.filter(r=>r.rid!==reId);save();
+ const ok=await push('delRec',{rid:reId,why});
+ if(!ok){if(old)D.recs.push(old);save();renderLog();return alert('No se pudo eliminar en Google Sheets. Inténtalo de nuevo.')}
+ $('#recEd').style.display='none';renderLog()};
+// ---- reporte (semanal, quincenal o rango; resumen o detalle por colaborador)
+let per='s';const rd=id=>$('#'+id).value;
 $('#rDate').value=dk(Date.now());
-$('#rDate').onchange=()=>{per='s'; $$('.pp button').forEach(x=>x.classList.toggle('on',x.dataset.p==='s')); renderRep()};
-$('#repFrom')?.addEventListener('change',()=>{ if($('#repFrom').value||$('#repTo').value){ per='custom'; $$('.pp button').forEach(x=>x.classList.toggle('on',x.dataset.p==='custom')); } renderRep(); });
-$('#repTo')?.addEventListener('change',()=>{ if($('#repFrom').value||$('#repTo').value){ per='custom'; $$('.pp button').forEach(x=>x.classList.toggle('on',x.dataset.p==='custom')); } renderRep(); });
-$('#repEmpFilter')?.addEventListener('change',renderRep);
-$('#repClear')?.addEventListener('click',()=>{ $('#repEmpFilter').value=''; $('#repFrom').value=''; $('#repTo').value=''; $('#rDate').value=dk(Date.now()); per='s'; $$('.pp button').forEach(x=>x.classList.toggle('on',x.dataset.p==='s')); renderRep(); });
-
-function range(){
-  const fromVal=$('#repFrom')?.value;
-  const toVal=$('#repTo')?.value;
-  if(per==='custom' || fromVal || toVal){
-    let a=fromVal?new Date(fromVal+'T00:00:00').getTime():new Date('2000-01-01').getTime();
-    let b=toVal?new Date(toVal+'T23:59:59').getTime():Date.now();
-    return [a,b];
-  }
-  const d=new Date($('#rDate').value+'T00:00:00');let a,b;
+$$('.pp button').forEach(b=>b.onclick=()=>{per=b.dataset.p;$$('.pp button').forEach(x=>x.classList.toggle('on',x===b));$('#rRef').classList.toggle('hide',per==='c');$('#rRng').classList.toggle('hide',per!=='c');renderRep()});
+['#rDate','#rFrom','#rTo','#rEmp'].forEach(s=>$(s).onchange=renderRep);
+function range(){let a,b;
+ if(per==='c'){b=rd('rTo')?new Date(rd('rTo')+'T00:00:00'):new Date();b.setHours(0,0,0,0);a=rd('rFrom')?new Date(rd('rFrom')+'T00:00:00'):new Date(b.getTime()-6*864e5)}
+ else{const d=new Date((rd('rDate')||dk(Date.now()))+'T00:00:00');
   if(per==='s'){const w=(d.getDay()+6)%7;a=new Date(d);a.setDate(d.getDate()-w);b=new Date(a);b.setDate(a.getDate()+6)}
-  else{const y=d.getFullYear(),m=d.getMonth();if(d.getDate()<=15){a=new Date(y,m,1);b=new Date(y,m,15)}else{a=new Date(y,m,16);b=new Date(y,m+1,0)}}
-  b.setHours(23,59,59,999);return[a.getTime(),b.getTime()];
-}
-function repRows(){
-  const[a,b]=range(),M={},EM=extraMap();
-  const empFilter=$('#repEmpFilter')?.value||'';
-  D.recs.filter(r=>r.in>=a&&r.in<=b&&r.out && (!empFilter||r.emp===empFilter)).forEach(r=>{const x=M[r.emp]||(M[r.emp]={days:new Set(),ms:0,ex:0,lt:0,fo:0});x.days.add(dk(r.in));x.ms+=r.out-r.in;x.ex+=(EM[r.rid]||0)/60000;if(lateOf(r.in))x.lt++;if(r.nota)x.fo++});
-  let list=D.emps.filter(e=>M[e.id]).map(e=>({id:e.id,name:e.name,d:M[e.id].days.size,ms:M[e.id].ms,ex:M[e.id].ex,lt:M[e.id].lt,fo:M[e.id].fo}));
-  if(empFilter) list=list.filter(r=>r.id===empFilter);
-  return list;
-}
-
-function getDaysArray(a,b){
-  const days=[];
-  let cur=new Date(a); cur.setHours(0,0,0,0);
-  const end=new Date(b); end.setHours(0,0,0,0);
-  while(cur<=end){
-    days.push(new Date(cur).getTime());
-    cur.setDate(cur.getDate()+1);
-  }
-  return days;
-}
-
-function renderRep(){
-  const[a,b]=range();
-  const empFilter=$('#repEmpFilter')?.value||'';
-  const emp = empFilter ? D.emps.find(e=>e.id===empFilter) : null;
-  const empName = emp?emp.name:'Todos';
-  $('#rLbl').textContent='Del '+dk(a)+' al '+dk(b)+' · Colaborador: '+empName;
-  
-  // Actualizar dropdowns
-  const sel=$('#repEmpFilter');
-  if(sel){
-    const cur=sel.value;
-    sel.innerHTML='<option value="">Todos - resumen</option>'+D.emps.map(e=>`<option value="${esc(e.id)}">${esc(e.name)} (${esc(e.id)})</option>`).join('');
-    sel.value=cur;
-  }
-  const logSel=$('#logEmpFilter');
-  if(logSel){
-    const cur=logSel.value;
-    logSel.innerHTML='<option value="">Todos los empleados</option>'+D.emps.map(e=>`<option value="${esc(e.id)}">${esc(e.name)} (${esc(e.id)})</option>`).join('');
-    logSel.value=cur;
-  }
-
-  if(!empFilter){
-    // MODO RESUMEN
-    $('#repSummary').classList.remove('hide');
-    $('#repDetail').classList.add('hide');
-    const R=repRows();
-    $('#rtb').innerHTML=R.length?R.map(r=>'<tr><td>'+esc(r.id)+'</td><td>'+esc(r.name)+'</td><td>'+r.d+'</td><td>'+dur(r.ms)+'</td><td>'+dur(r.ex*60000)+'</td><td>'+r.lt+'</td><td>'+r.fo+'</td></tr>').join(''):'<tr><td colspan="7" class="mu">Sin registros en este periodo.</td></tr>';
-  } else {
-    // MODO DETALLE POR COLABORADOR
-    $('#repSummary').classList.add('hide');
-    $('#repDetail').classList.remove('hide');
-    const EM=extraMap();
-    const days=getDaysArray(a,b);
-    const diasNombres=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
-    let totalMs=0, totalExtra=0, diasTrab=0;
-    let cntTiempo=0, cntTol=0, cntPrev=0, cntRojo=0, cntAusente=0;
-    let hoyMs=0;
-    const hoyStr=dk(Date.now());
-    
-    const rowsHtml = days.map(dayTs=>{
-      const dateStr=dk(dayTs);
-      const recsDia=D.recs.filter(r=>r.emp===empFilter && dk(r.in)===dateStr).sort((x,y)=>x.in-y.in);
-      if(recsDia.length===0){
-        cntAusente++;
-        const dn=new Date(dayTs).getDay();
-        return `<tr style="background:color-mix(in srgb, var(--bd) 30%, transparent)"><td>${diasNombres[dn]}</td><td><b>${dateStr}</b></td><td class="mu">—</td><td class="mu">—</td><td><span style="color:var(--mu)">Ausente / Sin registro</span></td><td>—</td><td>—</td><td class="mu">—</td></tr>`;
-      }
-      diasTrab++;
-      const entrada = Math.min(...recsDia.map(r=>r.in));
-      const salidas = recsDia.filter(r=>r.out).map(r=>r.out);
-      const salida = salidas.length? Math.max(...salidas) : null;
-      const abiertas = recsDia.some(r=>!r.out);
-      const msDia = recsDia.filter(r=>r.out).reduce((s,r)=>s+(r.out-r.in),0);
-      const extraDia = recsDia.filter(r=>r.out).reduce((s,r)=>s+(EM[r.rid]||0),0);
-      totalMs+=msDia;
-      totalExtra+=extraDia;
-      if(dateStr===hoyStr) hoyMs=msDia;
-      
-      // Clasificación llegada (primera entrada del día)
-      const realClas=clasifica(empFilter, entrada);
-      const clasGuardada=recsDia[0].clas || realClas.tipo;
-      if(clasGuardada==='A_TIEMPO') cntTiempo++;
-      else if(clasGuardada==='VERDE_TOL') cntTol++;
-      else if(clasGuardada && clasGuardada.startsWith('AMARILLO')) cntPrev++;
-      else if(clasGuardada && clasGuardada.startsWith('ROJO')) cntRojo++;
-      
-      let badge='', color='';
-      if(clasGuardada==='A_TIEMPO'){badge='✅ A tiempo'; color='var(--ok)';}
-      else if(clasGuardada==='VERDE_TOL'){badge='🟢 Tolerancia'; color='#16a34a';}
-      else if(clasGuardada==='AMARILLO_AGOTO_TOL'){badge='🟡 Agotó tol.'; color='#ca8a04';}
-      else if(clasGuardada==='AMARILLO_PREV'){badge='🟡 Preventivo'; color='#ca8a04';}
-      else if(clasGuardada && clasGuardada.startsWith('ROJO')){badge='🔴 Tarde'; color='var(--ko)';}
-      else {badge=realClas.label; color='var(--mu)';}
-      
-      const lateMin = recsDia[0].lateMin!==undefined?recsDia[0].lateMin:realClas.min;
-      
-      let estadoTrab='';
-      if(abiertas){
-        const lastOpen=recsDia.find(r=>!r.out);
-        const esHoy=dateStr===hoyStr;
-        if(esHoy) estadoTrab='<span style="color:#2563eb;font-weight:700">🟦 En curso - Trabajando</span>';
-        else estadoTrab='<span style="color:var(--ko);font-weight:700">⚠️ Sin salida - Faltó checada</span>'+(lastOpen.nota?'<br><small>'+esc(lastOpen.nota)+'</small>':'');
-      } else {
-        estadoTrab='<span style="color:var(--ok)">✅ Completado</span>';
-      }
-      
-      const dn=new Date(dayTs).getDay();
-      return `<tr>
-        <td><b>${diasNombres[dn]}</b></td>
-        <td><b>${dateStr}</b></td>
-        <td>${hm(entrada)}<br><small style="color:${color}">${lateMin>0?lateMin+'m tarde':'0m'}</small></td>
-        <td>${salida?hm(salida):'<span class="mu">—</span>'}</td>
-        <td>${estadoTrab}</td>
-        <td><b>${dur(msDia)}</b></td>
-        <td>${extraDia>0?dur(extraDia):'—'}</td>
-        <td><span style="color:${color};font-weight:700">${badge}</span></td>
-      </tr>`;
-    }).join('');
-    
-    $('#rtbDetail').innerHTML=rowsHtml || '<tr><td colspan="8" class="mu">Sin días en rango</td></tr>';
-    
-    // KPIs
-    const totalDiasRango=days.length;
-    const promTiempo = diasTrab?Math.round((cntTiempo/diasTrab)*100):0;
-    const promTol = diasTrab?Math.round((cntTol/diasTrab)*100):0;
-    const promTarde = diasTrab?Math.round(((cntPrev+cntRojo)/diasTrab)*100):0;
-    
-    $('#repKPI').innerHTML=`
-      <div style="background:color-mix(in srgb, var(--ok) 12%, transparent);border:1px solid var(--ok);border-radius:10px;padding:10px;text-align:center"><div class="mu">Horas acumuladas ${per==='s'?'semana':'quincena'}</div><div style="font-size:20px;font-weight:800">${dur(totalMs)}</div><div class="mu">${diasTrab} días trabajados de ${totalDiasRango}</div></div>
-      <div style="background:color-mix(in srgb, #eab308 12%, transparent);border:1px solid #eab308;border-radius:10px;padding:10px;text-align:center"><div class="mu">Horas extra acumuladas</div><div style="font-size:20px;font-weight:800">${dur(totalExtra)}</div><div class="mu">Extra real del periodo</div></div>
-      <div style="background:color-mix(in srgb, var(--ac) 12%, transparent);border:1px solid var(--ac);border-radius:10px;padding:10px;text-align:center"><div class="mu">Horas laboradas hoy</div><div style="font-size:20px;font-weight:800">${hoyMs?dur(hoyMs):'—'}</div><div class="mu">${hoyStr}</div></div>
-    `;
-    
-    $('#repCounters').innerHTML=`
-      <div style="background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px;text-align:center"><div style="font-size:22px">✅</div><div style="font-weight:700">${cntTiempo}</div><div class="mu">A tiempo</div><div class="mu">${promTiempo}%</div></div>
-      <div style="background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px;text-align:center"><div style="font-size:22px">🟢</div><div style="font-weight:700">${cntTol}</div><div class="mu">Tolerancia</div><div class="mu">${promTol}%</div></div>
-      <div style="background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px;text-align:center"><div style="font-size:22px">🟡🔴</div><div style="font-weight:700">${cntPrev+cntRojo}</div><div class="mu">Tardes</div><div class="mu">${promTarde}%</div></div>
-      <div style="background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px;text-align:center"><div style="font-size:22px">📅</div><div style="font-weight:700">${cntAusente}</div><div class="mu">Ausencias</div><div class="mu">${totalDiasRango-diasTrab} días sin registro</div></div>
-    `;
-    
-    $('#repAccum').innerHTML=`
-      <b>Resumen ${per==='s'?'semanal':'quincenal'} - ${esc(emp.name)}</b><br>
-      Periodo: ${dk(a)} al ${dk(b)} · Días trabajados: ${diasTrab}/${totalDiasRango}<br>
-      <b>Acumulado:</b> ${dur(totalMs)} totales · ${dur(totalExtra)} extra · ${dur(totalMs-totalExtra)} regulares<br>
-      <b>Puntualidad:</b> ${cntTiempo} a tiempo (${promTiempo}%), ${cntTol} tolerancia (${promTol}%), ${cntPrev+cntRojo} tardes (${promTarde}%)<br>
-      <b>Hoy:</b> ${hoyMs?dur(hoyMs):'Sin registro hoy'} (${hoyStr})
-    `;
-  }
-}
-
-$('#rcsv').onclick=async()=>{
-  const empFilter=$('#repEmpFilter')?.value||'';
-  if(!empFilter){
-    const t='Numero,Nombre,Dias,Horas,Horas_extra,Retardos,Sin_salida\n'+repRows().map(r=>[r.id,'"'+r.name+'"',r.d,(r.ms/3600000).toFixed(2),(r.ex/60).toFixed(2),r.lt,r.fo].join(',')).join('\n');
-    try{await navigator.clipboard.writeText(t);$('#rcsv').textContent='¡Copiado!'}catch(e){prompt('Copia CSV:',t)}setTimeout(()=>$('#rcsv').textContent='Copiar CSV',1500);
-  } else {
-    // CSV detallado por colaborador
-    const[a,b]=range();
-    const days=getDaysArray(a,b);
-    const EM=extraMap();
-    let csv='Dia,Fecha,Entrada,Salida,Estado_trabajador,Horas_dia,Extra_dia,Llegada,Retardo_min\n';
-    days.forEach(dayTs=>{
-      const dateStr=dk(dayTs);
-      const recsDia=D.recs.filter(r=>r.emp===empFilter && dk(r.in)===dateStr).sort((x,y)=>x.in-y.in);
-      if(recsDia.length===0){
-        csv+=`${new Date(dayTs).toLocaleDateString('es-MX',{weekday:'short'})},${dateStr},—,—,Ausente,—,—,—,\n`;
-      } else {
-        const entrada=Math.min(...recsDia.map(r=>r.in));
-        const salidas=recsDia.filter(r=>r.out).map(r=>r.out);
-        const salida=salidas.length?Math.max(...salidas):'';
-        const msDia=recsDia.filter(r=>r.out).reduce((s,r)=>s+(r.out-r.in),0);
-        const extraDia=recsDia.filter(r=>r.out).reduce((s,r)=>s+(EM[r.rid]||0),0);
-        const realClas=clasifica(empFilter, entrada);
-        const clas=recsDia[0].clas||realClas.tipo;
-        const estado=recsDia.some(r=>!r.out)?(dateStr===dk(Date.now())?'En curso':'Sin salida'):'Completado';
-        csv+=`${new Date(dayTs).toLocaleDateString('es-MX',{weekday:'short'})},${dateStr},${hm(entrada)},${salida?hm(salida):''},${estado},${(msDia/3600000).toFixed(2)},${(extraDia/3600000).toFixed(2)},${clas},${realClas.min}\n`;
-      }
-    });
-    try{await navigator.clipboard.writeText(csv);$('#rcsv').textContent='¡Copiado detalle!'}catch(e){prompt('Copia CSV detalle:',csv)}setTimeout(()=>$('#rcsv').textContent='Copiar CSV',1500);
-  }
-};
+  else{const y=d.getFullYear(),m=d.getMonth();if(d.getDate()<=15){a=new Date(y,m,1);b=new Date(y,m,15)}else{a=new Date(y,m,16);b=new Date(y,m+1,0)}}}
+ b.setHours(23,59,59,999);return[a.getTime(),b.getTime()]}
+function repRows(){const[a,b]=range(),EM=extraMap(),M={};
+ D.recs.filter(r=>r.in>=a&&r.in<=b&&r.out).forEach(r=>{const x=M[r.emp]||(M[r.emp]={d:new Set(),ms:0,ex:0,lt:0,fo:0});x.d.add(dk(r.in));x.ms+=r.out-r.in;x.ex+=(EM[r.rid]||0)/60000;if(cl(r.emp,r.in).late)x.lt++;if(r.nota)x.fo++});
+ return D.emps.filter(e=>M[e.id]).map(e=>({id:e.id,name:e.name,d:M[e.id].d.size,ms:M[e.id].ms,ex:M[e.id].ex,lt:M[e.id].lt,fo:M[e.id].fo}))}
+function renderRep(){fillEmp($('#rEmp'));const[a,b]=range(),em=rd('rEmp'),emp=D.emps.find(e=>e.id===em);
+ $('#rLbl').textContent='Del '+dk(a)+' al '+dk(b)+(emp?' · '+emp.name:'');
+ $('#rSum').classList.toggle('hide',!!em);$('#rDet').classList.toggle('hide',!em);
+ if(!em){const R=repRows();$('#rtb').innerHTML=R.length?R.map(r=>'<tr><td>'+esc(r.id)+'</td><td>'+esc(r.name)+'</td><td>'+r.d+'</td><td>'+dur(r.ms)+'</td><td>'+dur(r.ex*60000)+'</td><td>'+r.lt+'</td><td>'+r.fo+'</td></tr>').join(''):'<tr><td colspan="7" class="mu">Sin registros en este periodo.</td></tr>';return}
+ const EM=extraMap(),N=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'],hoy=dk(Date.now());let tot=0,ex=0,dias=0,A=0,V=0,T=0,aus=0,h='';
+ for(let t=new Date(a).setHours(0,0,0,0);t<=Math.min(b,Date.now());t=new Date(t).setDate(new Date(t).getDate()+1)){
+  const ds=dk(t),dn=new Date(t).getDay(),L=D.recs.filter(r=>r.emp===em&&dk(r.in)===ds).sort((x,y)=>x.in-y.in);
+  if(!L.length){const fin=dn===0||dn===6;if(!fin)aus++;h+='<tr><td>'+N[dn]+'</td><td>'+ds+'</td><td colspan="4" class="mu">'+(fin?'Descanso':'Ausente / sin registro')+'</td><td>—</td><td>—</td></tr>';continue}
+  dias++;const c=cl(em,L[0].in),cer=L.filter(r=>r.out),ms=cer.reduce((s,r)=>s+r.out-r.in,0),xd=cer.reduce((s,r)=>s+(EM[r.rid]||0),0),ab=L.find(r=>!r.out),sal=cer.length?Math.max(...cer.map(r=>r.out)):null,nt=L.find(r=>r.nota);
+  tot+=ms;ex+=xd;if(c.tipo==='A')A++;else if(c.tipo==='V')V++;else T++;
+  const est=ab?(ds===hoy?'<span style="color:var(--ac);font-weight:600">🟦 En curso</span>':'<span style="color:var(--ko);font-weight:600">⚠️ Sin salida</span>'):'✅ Completo';
+  h+='<tr><td>'+N[dn]+'</td><td>'+ds+'</td><td>'+hm(L[0].in)+'</td><td>'+(sal?hm(sal):'—')+(nt?'<div style="color:var(--ko);font-size:12px">⚠️ '+esc(nt.nota)+'</div>':'')+'</td><td>'+est+'</td><td>'+dur(ms)+'</td><td>'+(xd?dur(xd):'—')+'</td><td style="color:'+c.col+';font-weight:600">'+c.ico+' '+c.txt+'</td></tr>'}
+ $('#rtd').innerHTML=h||'<tr><td colspan="8" class="mu">Sin días en el rango.</td></tr>';
+ const hoyMs=D.recs.filter(r=>r.emp===em&&r.out&&dk(r.in)===hoy).reduce((s,r)=>s+r.out-r.in,0),K=(t,v,s)=>'<div class="kp"><div class="mu">'+t+'</div><b>'+v+'</b><div class="mu">'+s+'</div></div>',pc=n=>dias?Math.round(n*100/dias)+'%':'';
+ $('#rKpi').innerHTML=K('Horas del periodo',dur(tot),dias+' días trabajados')+K('Horas extra',dur(ex),'sobre 48 h/sem')+K('Horas hoy',hoyMs?dur(hoyMs):'—',hoy)+K('✅ A tiempo',A,pc(A))+K('🟢 Tolerancia',V,pc(V))+K('🟡🔴 Tardes',T,pc(T))+K('Ausencias',aus,'días laborables')}
+$('#rcsv').onclick=async()=>{const tb=rd('rEmp')?'#rtd':'#rtb',hd=[...$(tb).closest('table').querySelectorAll('th')].map(x=>x.textContent).join(','),t=hd+'\n'+$$(tb+' tr').map(tr=>[...tr.children].map(td=>'"'+td.innerText.replace(/"/g,'""')+'"').join(',')).join('\n');
+ try{await navigator.clipboard.writeText(t);$('#rcsv').textContent='¡Copiado!'}catch(e){prompt('Copia el CSV:',t)}setTimeout(()=>$('#rcsv').textContent='Copiar CSV',1500)};
 // ---- pestañas
 $$('.tabs button').forEach(b=>b.onclick=async()=>{if(b.dataset.t!=='reg'&&!(await login()))return;$$('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
  ['reg','emp','log','rep'].forEach(t=>$('#'+t).classList.toggle('hide',t!==b.dataset.t));
  stopCam();if(b.dataset.t==='reg')setMode(mode);if(b.dataset.t==='emp')renderEmps();if(b.dataset.t==='log')renderLog();if(b.dataset.t==='rep')renderRep()});
-renderEmps();renderLog();setMode('num');
-try{if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js')}catch(e){}
-if(API){setSync('Conectando…');pull();setInterval(()=>{if(!faceFor&&!regBusy)pull()},60000)}else setSync('Modo local (sin Google Sheets)');
+renderEmps();renderLog();setMode('num');zInfo();applyAp();
+try{if('serviceWorker' in navigator&&location.protocol==='https:'){let rl=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!rl){rl=true;location.reload()}});navigator.serviceWorker.register('sw.js').then(r=>r.update())}}catch(e){}
+if(API){setSync('Conectando…');pull();setInterval(()=>{if(!faceFor&&!regBusy)pull()},60000)}else{setSync('⚠️ MODO LOCAL: las checadas NO se guardan en Google Sheets');$('#sync').style.cssText='margin:-6px 0 10px;color:#fff;background:var(--ko);padding:6px 10px;border-radius:8px;font-weight:600'};
 </script></body></html>
